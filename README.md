@@ -19,8 +19,11 @@ Quick usage
 
 Variables
 ---
+
 `phoenix_user`: Defines the user that will run Phoenix. Default: `phoenix`
+
 `phoenix_group`: Sets the user's primary group. Default: `phoenix`
+
 `phoenix_groups`: Additional groups for the User. Default: `''`
 
 After provision
