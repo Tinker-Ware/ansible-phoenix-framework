@@ -14,4 +14,4 @@ galaxy_info:
   - frameworks
   - elixir
 dependencies:
-  - tersmitten.nodejs
+  - nodejs
