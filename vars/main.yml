@@ -1,0 +1,6 @@
+---
+git_clone_path: /opt/tinker/shared_files/elixir
+phoenix_commands:
+  - "mix deps.get"
+  - "mix ecto.create --force"
+  - "mix ecto.migrate --force"
