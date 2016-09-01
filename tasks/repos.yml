@@ -1,29 +1,68 @@
 ---
 - name: Clone provided elixir repositories
   git:
-    repo="{{ item }}"
-    dest="{{ git_clone_path }}/{{ item | basename }}"
+    repo="{{ item.value.name }}"
+    dest="{{ git_clone_path }}/{{ item.value.name | basename }}"
     accept_hostkey=yes
     key_file="{{ phoenix_git_key_path }}"
-  with_items: "{{ phoenix_repos }}"
+  with_dict: "{{ phoenix_repos }}"
   sudo: yes
   sudo_user: "{{ phoenix_user }}"
 
-- name: Get dependencies of elixir repos
-  command: "{{ item.1 }}"
+- name: configure Add provided production config file
+  copy:
+    src={{ inventory_dir }}/host_files/{{ inventory_hostname }}/{{ item.value.prod_file }}
+    dest="{{ git_clone_path }}/{{ item.value.name | basename }}/config/prod.exs"
+    owner="{{ phoenix_user }}"
+    group="{{ phoenix_group }}"
+    mode=644
+  when: item.value.prod_file is defined
+  with_dict: "{{ phoenix_repos }}"
+  sudo: yes
+
+- name: Get dependencies in repository
+  command: "mix deps.get"
   args:
-    chdir: "{{ git_clone_path }}/{{ item.0 | basename }}"
-  with_nested:
-    - "{{ phoenix_repos }}"
-    - "{{ phoenix_commands }}"
+    chdir: "{{ git_clone_path }}/{{ item.value.name | basename }}"
+  with_dict: "{{ phoenix_repos }}"
   sudo: yes
   sudo_user: "{{ phoenix_user }}"
+  ignore_errors: yes ## These commands should be handled different to avoid possible errors..
+
+- name: Create dev database
+  shell: " mix local.rebar --force && mix ecto.create --force"
+  args:
+    chdir: "{{ git_clone_path }}/{{ item.value.name | basename }}"
+  with_dict: "{{ phoenix_repos }}"
+  sudo: yes
+  sudo_user: "{{ phoenix_user }}"
+  ignore_errors: yes ## These commands should be handled different to avoid possible errors..
+
+- name: Migrate dev database
+  shell: "mix ecto.migrate --force"
+  args:
+    chdir: "{{ git_clone_path }}/{{ item.value.name | basename }}"
+  with_dict: "{{ phoenix_repos }}"
+  sudo: yes
+  sudo_user: "{{ phoenix_user }}"
+  ignore_errors: yes ## These commands should be handled different to avoid possible errors..
 
 - name: Run phoenix service
   shell: "nohup mix phoenix.server >> /tmp/phoenix_server.log 2>&1&"
   args:
-    chdir: "{{ git_clone_path }}/{{ item | basename }}"
-  with_items:
-    - "{{ phoenix_repos }}"
+    chdir: "{{ git_clone_path }}/{{ item.value.name | basename }}"
+  with_dict: "{{ phoenix_repos }}"
   sudo: yes
   sudo_user: "{{ phoenix_user }}"
+  ignore_errors: yes ## These commands should be handled different to avoid possible errors.
+
+#PRODUCTION
+# - name: Run phoenix service
+#   shell: "nohup PORT=4001 MIX_ENV=prod mix phoenix.server >> /tmp/phoenix_server.log 2>&1&"
+#   args:
+#     chdir: "{{ git_clone_path }}/{{ item.name | basename }}"
+#   with_dict:
+#     - "{{ phoenix_repos }}"
+#   sudo: yes
+#   sudo_user: "{{ phoenix_user }}"
+#   ignore_errors: yes ## These commands should be handled different to avoid possible errors.
