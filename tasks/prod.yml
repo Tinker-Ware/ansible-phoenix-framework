@@ -29,10 +29,24 @@
   sudo_user: "{{ phoenix_user }}"
   ignore_errors: yes ## These commands should be handled different to avoid possible errors..
 
-- name: Prod | Run phoenix service
-  shell: "nohup PORT=4001 MIX_ENV=prod mix phoenix.server >> /tmp/phoenix_server.log 2>&1&"
+- name: Prod | Compile with dependencies
+  command: "mix compile"
   args:
-    chdir: "{{ git_clone_path }}/{{ item.name | basename }}"
+    chdir: "{{ git_clone_path }}/{{ item.value.name | basename }}"
+  environment:
+    MIX_ENV: prod
+  with_dict: "{{ phoenix_repos }}"
+  sudo: yes
+  sudo_user: "{{ phoenix_user }}"
+  ignore_errors: yes ## These commands should be handled different to avoid possible errors..
+
+- name: Prod | Run phoenix service
+  shell: "nohup mix phoenix.server >> /tmp/phoenix_server.log 2>&1&"
+  args:
+    chdir: "{{ git_clone_path }}/{{ item.value.name | basename }}"
+  environment:
+    PORT: 4001
+    MIX_ENV: prod
   with_dict: "{{ phoenix_repos }}"
   sudo: yes
   sudo_user: "{{ phoenix_user }}"
