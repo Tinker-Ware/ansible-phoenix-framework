@@ -1,0 +1,46 @@
+---
+- name: Dev | Clone provided elixir repositories
+  git:
+    repo="{{ item.value.name }}"
+    dest="{{ git_clone_path }}/{{ item.value.name | basename }}"
+    accept_hostkey=yes
+    key_file="{{ phoenix_git_key_path }}"
+  with_dict: "{{ phoenix_repos }}"
+  sudo: yes
+  sudo_user: "{{ phoenix_user }}"
+
+- name: Dev |  Get dependencies in repository
+  command: "mix deps.get"
+  args:
+    chdir: "{{ git_clone_path }}/{{ item.value.name | basename }}"
+  with_dict: "{{ phoenix_repos }}"
+  sudo: yes
+  sudo_user: "{{ phoenix_user }}"
+  ignore_errors: yes ## These commands should be handled different to avoid possible errors..
+
+- name: Dev | Create dev database
+  shell: " mix local.rebar --force && mix ecto.create --force"
+  args:
+    chdir: "{{ git_clone_path }}/{{ item.value.name | basename }}"
+  with_dict: "{{ phoenix_repos }}"
+  sudo: yes
+  sudo_user: "{{ phoenix_user }}"
+  ignore_errors: yes ## These commands should be handled different to avoid possible errors..
+
+- name: Dev | Migrate dev database
+  shell: "mix ecto.migrate --force"
+  args:
+    chdir: "{{ git_clone_path }}/{{ item.value.name | basename }}"
+  with_dict: "{{ phoenix_repos }}"
+  sudo: yes
+  sudo_user: "{{ phoenix_user }}"
+  ignore_errors: yes ## These commands should be handled different to avoid possible errors..
+
+- name: Dev | Run phoenix service
+  shell: "nohup mix phoenix.server >> /tmp/phoenix_server.log 2>&1&"
+  args:
+    chdir: "{{ git_clone_path }}/{{ item.value.name | basename }}"
+  with_dict: "{{ phoenix_repos }}"
+  sudo: yes
+  sudo_user: "{{ phoenix_user }}"
+  ignore_errors: yes ## These commands should be handled different to avoid possible errors.

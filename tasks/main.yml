@@ -1,3 +1,6 @@
 ---
 - include: install.yml
-- include: repos.yml
+- include: dev.yml
+  when: phoenix_dev
+- include: prod.yml
+  when: not phoenix_dev
