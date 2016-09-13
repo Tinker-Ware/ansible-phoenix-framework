@@ -26,7 +26,7 @@
 
 - name: Prod | Add provided production secret file
   copy:
-    content="{{ priv_production_file }}"
+    content="{{ hostvars[inventory_hostname][item.key + '_production_file'] }}"
     dest="{{ git_clone_path }}/{{ item.value.name | basename }}/config/prod.secret.exs"
     owner="{{ phoenix_user }}"
     group="{{ phoenix_group }}"
@@ -42,7 +42,6 @@
   with_dict: "{{ phoenix_repos }}"
   sudo: yes
   sudo_user: "{{ phoenix_user }}"
-  ignore_errors: yes ## These commands should be handled different to avoid possible errors..
 
 - name: Prod | Compile with dependencies
   shell: "mix local.rebar --force && mix compile"
@@ -53,16 +52,25 @@
   with_dict: "{{ phoenix_repos }}"
   sudo: yes
   sudo_user: "{{ phoenix_user }}"
-  ignore_errors: yes ## These commands should be handled different to avoid possible errors..
 
-- name: Prod | Run phoenix service
-  shell: "nohup mix phoenix.server >> /tmp/phoenix_server.log 2>&1&"
+- name: Prod | Migrate DB schema if necessary
+  shell: "mix ecto.migrate"
   args:
     chdir: "{{ git_clone_path }}/{{ item.value.name | basename }}"
   environment:
-    PORT: 4001
     MIX_ENV: prod
   with_dict: "{{ phoenix_repos }}"
   sudo: yes
   sudo_user: "{{ phoenix_user }}"
-  ignore_errors: yes ## These commands should be handled different to avoid possible errors.
+  when: item.value.migrate
+
+- name: Prod | Run phoenix service
+  shell: "nohup mix phoenix.server >> /tmp/phoenix_server_{{ item.key }}.log 2>&1&"
+  args:
+    chdir: "{{ git_clone_path }}/{{ item.value.name | basename }}"
+  environment:
+    PORT: "{{ item.value.port }}"
+    MIX_ENV: prod
+  with_dict: "{{ phoenix_repos }}"
+  sudo: yes
+  sudo_user: "{{ phoenix_user }}"
