@@ -3,3 +3,11 @@ phoenix_user: phoenix
 phoenix_group: phoenix
 phoenix_groups: ''
 phoenix_dev: yes
+phoenix_git_key_path: /home/user/.ssh/id_rsa
+# phoenix_repos:
+#   users:
+#     name: https://github.com/user/service_repo.git
+#     prod_file: service_prod.exs
+#     prod_secret_file: service_secret_prod.exs
+#     port: 4001
+#     migrate: yes
