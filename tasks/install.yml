@@ -18,8 +18,8 @@
     update_cache=yes
     state=present
   with_items:
-    - esl-erlang
-    - elixir
+    - esl-erlang="{{ esl_erlang_version }}"
+    - elixir="{{ elixir_version }}"
     - inotify-tools
 - command: mix local.hex --force
   sudo: yes
