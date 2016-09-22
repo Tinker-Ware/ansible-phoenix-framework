@@ -1,3 +1,4 @@
 ---
 git_clone_path: /opt/tinker/shared_files/elixir
 esl_erlang_version: 1:19.0.3
+elixir_version: 1.3.2-1
