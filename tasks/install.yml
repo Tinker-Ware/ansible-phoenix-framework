@@ -18,7 +18,7 @@
     update_cache=yes
     state=present
   with_items:
-    - esl-erlang
+    - esl-erlang="{{ esl_erlang_version }}"
     - elixir
     - inotify-tools
 - command: mix local.hex --force

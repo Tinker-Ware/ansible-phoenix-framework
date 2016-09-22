@@ -1,11 +1,3 @@
 ---
 git_clone_path: /opt/tinker/shared_files/elixir
-phoenix_commands:
-  - "mix deps.get"
-  - "mix ecto.create --force"
-  - "mix ecto.migrate --force"
-production_commands:
-  - "mix deps.get --only prod"
-  - "MIX_ENV=prod mix compile"
-  - "MIX_ENV=prod mix ecto.migrate"
-#http://www.phoenixframework.org/docs/deployment
+esl_erlang_version: 1:19.0.3
