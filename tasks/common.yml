@@ -1,0 +1,11 @@
+---
+- name: Common | Clone provided elixir repositories
+  git:
+    repo="{{ item.value.name }}"
+    dest="{{ git_clone_path }}/{{ item.value.name | basename }}"
+    accept_hostkey=yes
+    key_file="{{ phoenix_git_key_path }}"
+    version="{{ item.value.branch }}"
+  with_dict: "{{ phoenix_repos }}"
+  sudo: yes
+  sudo_user: "{{ phoenix_user }}"

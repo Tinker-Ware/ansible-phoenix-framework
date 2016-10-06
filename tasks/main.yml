@@ -1,5 +1,6 @@
 ---
 - include: install.yml
+- include: common.yml
 - include: dev.yml
   when: phoenix_dev
 - include: prod.yml
