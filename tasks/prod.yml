@@ -1,14 +1,4 @@
 ---
-- name: Prod | Clone provided elixir repositories
-  git:
-    repo="{{ item.value.name }}"
-    dest="{{ git_clone_path }}/{{ item.value.name | basename }}"
-    accept_hostkey=yes
-    key_file="{{ phoenix_git_key_path }}"
-  with_dict: "{{ phoenix_repos }}"
-  sudo: yes
-  sudo_user: "{{ phoenix_user }}"
-
 - name: Prod | configure Add provided production config file
   copy:
     src={{ inventory_dir }}/host_files/{{ inventory_hostname }}/{{ item.value.prod_file }}
