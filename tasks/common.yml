@@ -6,6 +6,10 @@
     accept_hostkey=yes
     key_file="{{ phoenix_git_key_path }}"
     version="{{ item.value.branch }}"
+    force=yes
+    update=yes
   with_dict: "phoenix_repos"
   sudo: yes
   sudo_user: "{{ phoenix_user }}"
+  tags:
+    - update_phoenix_repo

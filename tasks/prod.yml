@@ -9,10 +9,14 @@
   when: item.value.prod_file is defined
   with_dict: "phoenix_repos"
   sudo: yes
+  tags:
+    - update_phoenix_repo
 
 - include_vars: "{{ inventory_dir }}/host_files/{{ inventory_hostname }}/{{ item.value.prod_secret_file }}"
   when: private_key
   with_dict: "phoenix_repos"
+  tags:
+    - update_phoenix_repo
 
 - name: Prod | Add provided production secret file
   copy:
@@ -24,6 +28,8 @@
   when: item.value.prod_secret_file is defined
   with_dict: "phoenix_repos"
   sudo: yes
+  tags:
+    - update_phoenix_repo
 
 - name: Prod | Get dependencies in repository
   command: "mix deps.get --only prod"
@@ -32,6 +38,8 @@
   with_dict: "phoenix_repos"
   sudo: yes
   sudo_user: "{{ phoenix_user }}"
+  tags:
+    - update_phoenix_repo
 
 - name: Prod | Compile with dependencies
   shell: "mix local.rebar --force && mix compile"
@@ -42,6 +50,8 @@
   with_dict: "phoenix_repos"
   sudo: yes
   sudo_user: "{{ phoenix_user }}"
+  tags:
+    - update_phoenix_repo
 
 - name: Prod | Migrate DB schema if necessary
   shell: "mix ecto.migrate"
@@ -54,6 +64,14 @@
   sudo_user: "{{ phoenix_user }}"
   when: item.value.migrate
 
+- name: Prod | Kill existing phoenix services
+  shell: "ps aux | grep phoenix | grep -v grep | awk '{printf(\"%s \"), $2}' | xargs kill -9"
+  sudo: yes
+  sudo_user: "{{ server_user }}"
+  tags:
+    - update_services
+    - update_phoenix_repo
+
 - name: Prod | Run phoenix service
   shell: "nohup mix phoenix.server >> /tmp/phoenix_server_{{ item.key }}.log 2>&1&"
   args:
@@ -64,3 +82,6 @@
   with_dict: "phoenix_repos"
   sudo: yes
   sudo_user: "{{ phoenix_user }}"
+  tags:
+    - update_services
+    - update_phoenix_repo

@@ -11,3 +11,4 @@ phoenix_git_key_path: /home/user/.ssh/id_rsa
 #     prod_secret_file: service_secret_prod.exs
 #     port: 4001
 #     migrate: yes
+#     branch: master
