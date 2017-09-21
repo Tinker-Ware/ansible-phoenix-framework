@@ -65,7 +65,9 @@
   when: item.value.migrate
 
 - name: Prod | Kill existing elixir services
-  shell: "ps aux | grep phoenix | grep -v grep | awk '{printf(\"%s \"), $2}' | xargs kill -9"
+  shell: "kill $(pgrep -f spark | grep -v $(pgrep -f ansible))"
+  register: exit_code
+  failed_when: exit_code.rc == 1
   sudo: yes
   sudo_user: "{{ server_user }}"
   tags:
