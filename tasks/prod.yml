@@ -8,7 +8,7 @@
     mode=644
   when: item.value.prod_file is defined
   with_dict: "phoenix_repos"
-  sudo: yes
+  become: yes
   tags:
     - update_phoenix_repo
 
@@ -27,7 +27,7 @@
     mode=644
   when: item.value.prod_secret_file is defined
   with_dict: "phoenix_repos"
-  sudo: yes
+  become: yes
   tags:
     - update_phoenix_repo
 
@@ -36,8 +36,8 @@
   args:
     chdir: "{{ git_clone_path }}/{{ item.value.name | basename }}"
   with_dict: "phoenix_repos"
-  sudo: yes
-  sudo_user: "{{ phoenix_user }}"
+  become: yes
+  become_user: "{{ phoenix_user }}"
   tags:
     - update_phoenix_repo
 
@@ -48,8 +48,8 @@
   environment:
     MIX_ENV: prod
   with_dict: "phoenix_repos"
-  sudo: yes
-  sudo_user: "{{ phoenix_user }}"
+  become: yes
+  become_user: "{{ phoenix_user }}"
   tags:
     - update_phoenix_repo
 
@@ -60,16 +60,16 @@
   environment:
     MIX_ENV: prod
   with_dict: "phoenix_repos"
-  sudo: yes
-  sudo_user: "{{ phoenix_user }}"
+  become: yes
+  become_user: "{{ phoenix_user }}"
   when: item.value.migrate
 
 - name: Prod | Kill existing elixir services
   shell: "kill $(pgrep -f phoenix | grep -v $(pgrep -f ansible))"
   register: exit_code
   failed_when: exit_code.rc == 1
-  sudo: yes
-  sudo_user: "{{ server_user }}"
+  become: yes
+  become_user: "{{ server_user }}"
   tags:
     - update_services
     - update_phoenix_repo
@@ -82,8 +82,8 @@
     PORT: "{{ item.value.port }}"
     MIX_ENV: prod
   with_dict: "phoenix_repos"
-  sudo: yes
-  sudo_user: "{{ phoenix_user }}"
+  become: yes
+  become_user: "{{ phoenix_user }}"
   tags:
     - update_services
     - update_phoenix_repo

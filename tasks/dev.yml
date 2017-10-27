@@ -4,8 +4,8 @@
   args:
     chdir: "{{ git_clone_path }}/{{ item.value.name | basename }}"
   with_dict: "phoenix_repos"
-  sudo: yes
-  sudo_user: "{{ phoenix_user }}"
+  become: yes
+  become_user: "{{ phoenix_user }}"
   ignore_errors: yes ## These commands should be handled different to avoid possible errors..
 
 - name: Dev | Create dev database
@@ -13,8 +13,8 @@
   args:
     chdir: "{{ git_clone_path }}/{{ item.value.name | basename }}"
   with_dict: "phoenix_repos"
-  sudo: yes
-  sudo_user: "{{ phoenix_user }}"
+  become: yes
+  become_user: "{{ phoenix_user }}"
   ignore_errors: yes ## These commands should be handled different to avoid possible errors..
 
 - name: Dev | Migrate dev database
@@ -22,8 +22,8 @@
   args:
     chdir: "{{ git_clone_path }}/{{ item.value.name | basename }}"
   with_dict: "phoenix_repos"
-  sudo: yes
-  sudo_user: "{{ phoenix_user }}"
+  become: yes
+  become_user: "{{ phoenix_user }}"
   ignore_errors: yes ## These commands should be handled different to avoid possible errors..
 
 - name: Dev | Run phoenix service
@@ -31,6 +31,6 @@
   args:
     chdir: "{{ git_clone_path }}/{{ item.value.name | basename }}"
   with_dict: "phoenix_repos"
-  sudo: yes
-  sudo_user: "{{ phoenix_user }}"
+  become: yes
+  become_user: "{{ phoenix_user }}"
   ignore_errors: yes ## These commands should be handled different to avoid possible errors.

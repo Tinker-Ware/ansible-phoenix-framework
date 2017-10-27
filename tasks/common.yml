@@ -9,7 +9,7 @@
     force=yes
     update=yes
   with_dict: "phoenix_repos"
-  sudo: yes
-  sudo_user: "{{ phoenix_user }}"
+  become: yes
+  become_user: "{{ phoenix_user }}"
   tags:
     - update_phoenix_repo

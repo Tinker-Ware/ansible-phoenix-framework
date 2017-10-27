@@ -1,7 +1,7 @@
 ---
-- include: install.yml
-- include: common.yml
-- include: dev.yml
+- include_tasks: install.yml
+- include_tasks: common.yml
+- include_tasks: dev.yml
   when: phoenix_dev
-- include: prod.yml
+- include_tasks: prod.yml
   when: not phoenix_dev
