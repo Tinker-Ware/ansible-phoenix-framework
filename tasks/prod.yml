@@ -64,21 +64,8 @@
   sudo_user: "{{ phoenix_user }}"
   when: item.value.migrate
 
-- name: Prod | Prefill database if necessary
-  shell: "mix run priv/repo/seeds.exs"
-  args:
-    chdir: "{{ git_clone_path }}/{{ item.value.name | basename }}"
-  environment:
-    MIX_ENV: prod
-  with_dict: "phoenix_repos"
-  sudo: yes
-  sudo_user: "{{ phoenix_user }}"
-  when: item.value.migrate
-
 - name: Prod | Kill existing elixir services
-  shell: "kill $(pgrep -f phoenix | grep -v $(pgrep -f ansible))"
-  register: exit_code
-  failed_when: exit_code.rc == 1
+  shell: "ps aux | grep phoenix | grep -v grep | awk '{printf(\"%s \"), $2}' | xargs kill -9"
   sudo: yes
   sudo_user: "{{ server_user }}"
   tags:
