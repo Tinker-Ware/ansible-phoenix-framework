@@ -7,14 +7,14 @@
     group="{{ phoenix_group }}"
     mode=644
   when: item.value.prod_file is defined
-  with_dict: "phoenix_repos"
-  sudo: yes
+  with_dict: "{{ phoenix_repos }}"
+  become: yes
   tags:
     - update_phoenix_repo
 
 - include_vars: "{{ inventory_dir }}/host_files/{{ inventory_hostname }}/{{ item.value.prod_secret_file }}"
   when: private_key
-  with_dict: "phoenix_repos"
+  with_dict: "{{ phoenix_repos }}"
   tags:
     - update_phoenix_repo
 
@@ -26,8 +26,8 @@
     group="{{ phoenix_group }}"
     mode=644
   when: item.value.prod_secret_file is defined
-  with_dict: "phoenix_repos"
-  sudo: yes
+  with_dict: "{{ phoenix_repos }}"
+  become: yes
   tags:
     - update_phoenix_repo
 
@@ -35,9 +35,9 @@
   command: "mix deps.get --only prod"
   args:
     chdir: "{{ git_clone_path }}/{{ item.value.name | basename }}"
-  with_dict: "phoenix_repos"
-  sudo: yes
-  sudo_user: "{{ phoenix_user }}"
+  with_dict: "{{ phoenix_repos }}"
+  become: yes
+  become_user: "{{ phoenix_user }}"
   tags:
     - update_phoenix_repo
 
@@ -47,9 +47,9 @@
     chdir: "{{ git_clone_path }}/{{ item.value.name | basename }}"
   environment:
     MIX_ENV: prod
-  with_dict: "phoenix_repos"
-  sudo: yes
-  sudo_user: "{{ phoenix_user }}"
+  with_dict: "{{ phoenix_repos }}"
+  become: yes
+  become_user: "{{ phoenix_user }}"
   tags:
     - update_phoenix_repo
 
@@ -59,15 +59,15 @@
     chdir: "{{ git_clone_path }}/{{ item.value.name | basename }}"
   environment:
     MIX_ENV: prod
-  with_dict: "phoenix_repos"
-  sudo: yes
-  sudo_user: "{{ phoenix_user }}"
+  with_dict: "{{ phoenix_repos }}"
+  become: yes
+  become_user: "{{ phoenix_user }}"
   when: item.value.migrate
 
 - name: Prod | Kill existing elixir services
   shell: "ps aux | grep phoenix | grep -v grep | awk '{printf(\"%s \"), $2}' | xargs kill -9"
-  sudo: yes
-  sudo_user: "{{ server_user }}"
+  become: yes
+  become_user: "{{ server_user }}"
   tags:
     - update_services
     - update_phoenix_repo
@@ -79,9 +79,9 @@
   environment:
     PORT: "{{ item.value.port }}"
     MIX_ENV: prod
-  with_dict: "phoenix_repos"
-  sudo: yes
-  sudo_user: "{{ phoenix_user }}"
+  with_dict: "{{ phoenix_repos }}"
+  become: yes
+  become_user: "{{ phoenix_user }}"
   tags:
     - update_services
     - update_phoenix_repo

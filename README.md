@@ -1,7 +1,7 @@
 Phoenix Framework Ansible Role
 ===
 
-This role will is to provide a ready-to-use [Phoenix Framework](http://www.phoenixframework.org/) 
+This role will is to provide a ready-to-use [Phoenix Framework](http://www.phoenixframework.org/)
 for [Elixir](http://elixir-lang.org/).
 
 Requirements
@@ -14,8 +14,8 @@ Quick usage
 
 - hosts: my_host
   roles:
-      - { role: nodejs, sudo: yes }
-      - { role: phoenix, sudo: yes }
+      - { role: nodejs, become: yes }
+      - { role: phoenix, become: yes }
 
 Variables
 ---

@@ -8,8 +8,8 @@
     version="{{ item.value.branch }}"
     force=yes
     update=yes
-  with_dict: "phoenix_repos"
-  sudo: yes
-  sudo_user: "{{ phoenix_user }}"
+  with_dict: "{{ phoenix_repos }}"
+  become: yes
+  become_user: "{{ phoenix_user }}"
   tags:
     - update_phoenix_repo
