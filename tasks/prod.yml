@@ -64,6 +64,17 @@
   become_user: "{{ phoenix_user }}"
   when: item.value.migrate
 
+- name: Prod | Prefill database if necessary
+  shell: "mix run priv/repo/seeds.exs"
+  args:
+    chdir: "{{ git_clone_path }}/{{ item.value.name | basename }}"
+  environment:
+    MIX_ENV: prod
+  with_dict: "phoenix_repos"
+  become: yes
+  become_user: "{{ phoenix_user }}"
+  when: item.value.migrate
+
 - name: Prod | Kill existing elixir services
   shell: "ps aux | grep phoenix | grep -v grep | awk '{printf(\"%s \"), $2}' | xargs kill -9"
   become: yes
