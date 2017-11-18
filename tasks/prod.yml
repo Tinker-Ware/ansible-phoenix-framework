@@ -70,7 +70,7 @@
     chdir: "{{ git_clone_path }}/{{ item.value.name | basename }}"
   environment:
     MIX_ENV: prod
-  with_dict: "phoenix_repos"
+  with_dict: "{{ phoenix_repos }}"
   become: yes
   become_user: "{{ phoenix_user }}"
   when: item.value.migrate
