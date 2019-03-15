@@ -53,6 +53,16 @@
   tags:
     - update_phoenix_repo
 
+- name: Prod | Create database
+  shell: "mix ecto.create"
+  args:
+    chdir: "{{ git_clone_path }}/{{ item.value.name | basename }}"
+  environment:
+    MIX_ENV: prod
+  with_dict: "{{ phoenix_repos }}"
+  become: yes
+  become_user: "{{ phoenix_user }}"
+
 - name: Prod | Migrate DB schema if necessary
   shell: "mix ecto.migrate"
   args:
