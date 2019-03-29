@@ -8,22 +8,23 @@
     group="{{ phoenix_group }}"
     groups="{{ phoenix_groups }}"
     state=present
-- get_url:
-    url=https://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb
-    dest=/tmp
+
 - apt:
-    deb=/tmp/erlang-solutions_1.0_all.deb
+    deb=https://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb
+
 - apt:
     name="{{ item }}"
     update_cache=yes
     state=present
   with_items:
-    - esl-erlang="{{ esl_erlang_version }}"
-    - elixir="{{ elixir_version }}"
-    - inotify-tools
+    - "esl-erlang={{ esl_erlang_version }}"
+    - "elixir={{ elixir_version }}"
+    - "inotify-tools"
+
 - command: mix local.hex --force
-  sudo: yes
-  sudo_user: "{{ phoenix_user }}"
+  become: yes
+  become_user: "{{ phoenix_user }}"
+  
 - command: mix archive.install https://github.com/phoenixframework/archives/raw/master/phoenix_new.ez --force
-  sudo: yes
-  sudo_user: "{{ phoenix_user }}"
+  become: yes
+  become_user: "{{ phoenix_user }}"
